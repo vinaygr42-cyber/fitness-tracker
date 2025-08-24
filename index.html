@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+    h1, h2 { text-align: center; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; margin: 8px 0; padding: 10px; font-size: 16px; }
+    .stats { display: flex; justify-content: space-between; margin-top: 20px; }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Fitness Tracker</h1>
+    <h2>Profile Setup</h2>
+    <label>Age:</label><input type="number" id="age" />
+    <label>Gender:</label>
+    <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
+    <label>Height (cm):</label><input type="number" id="height" />
+    <label>Weight (kg):</label><input type="number" id="weight" />
+    <label>Goal:</label>
+    <select id="goal"><option value="maintain">Maintain</option><option value="loss">Lose</option><option value="gain">Gain</option></select>
+    <button onclick="saveProfile()">Save Profile</button>
+
+    <h2>Log Daily Intake</h2>
+    <label>Calories:</label><input type="number" id="calories" />
+    <label>Protein (g):</label><input type="number" id="protein" />
+    <label>Carbs (g):</label><input type="number" id="carbs" />
+    <label>Fats (g):</label><input type="number" id="fats" />
+    <label>Weight (kg):</label><input type="number" id="dailyWeight" />
+    <button onclick="logIntake()">Log Intake</button>
+
+    <h2>Dashboard</h2>
+    <div id="dashboard"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let profile = JSON.parse(localStorage.getItem('profile')) || {};
+    let logs = JSON.parse(localStorage.getItem('logs')) || [];
+
+    function saveProfile() {
+      profile = {
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        height: document.getElementById('height').value,
+        weight: document.getElementById('weight').value,
+        goal: document.getElementById('goal').value
+      };
+      localStorage.setItem('profile', JSON.stringify(profile));
+      alert('Profile saved!');
+      renderDashboard();
+    }
+
+    function logIntake() {
+      const today = new Date().toISOString().split('T')[0];
+      logs.push({
+        date: today,
+        calories: document.getElementById('calories').value,
+        protein: document.getElementById('protein').value,
+        carbs: document.getElementById('carbs').value,
+        fats: document.getElementById('fats').value,
+        weight: document.getElementById('dailyWeight').value
+      });
+      localStorage.setItem('logs', JSON.stringify(logs));
+      alert('Logged successfully!');
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const dash = document.getElementById('dashboard');
+      dash.innerHTML = '<h3>Recent Logs</h3>' + logs.slice(-7).map(l => `<p>${l.date}: ${l.calories} kcal, Wt: ${l.weight}kg</p>`).join('');
+    }
+
+    renderDashboard();
+  </script>
+</body>
+</html>
